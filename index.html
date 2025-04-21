@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Jonathan Vella | Tech Wizard</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
   <style>
     body {
       background-color: #0d0d0d;
@@ -14,13 +16,26 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      transition: background-color 0.5s, color 0.5s;
+    }
+    #particles-js {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+    .dark-mode {
+      background-color: #ff00aa;
+      color: #fff;
     }
     .terminal {
       background: #111;
       border-radius: 8px;
       padding: 2rem;
       width: 90%;
-      max-width: 800px;
+      max-width: 900px;
       box-shadow: 0 0 20px #00ff99;
     }
     h1, h2 {
@@ -36,9 +51,7 @@
       overflow: hidden;
       white-space: nowrap;
       border-right: .15em solid #33ff33;
-      animation:
-        typing 3.5s steps(40, end),
-        blink-caret .75s step-end infinite;
+      animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite;
     }
     @keyframes typing {
       from { width: 0 }
@@ -58,9 +71,58 @@
     .links {
       margin-top: 1.5rem;
     }
+    .projects {
+      margin-top: 3rem;
+    }
+    .card {
+      background: #222;
+      border: 1px solid #33ff33;
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      transition: transform 0.2s, filter 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .card:hover {
+      transform: scale(1.05);
+      filter: drop-shadow(0 0 8px #00ffff);
+    }
+    .material-icons {
+      font-size: 2rem;
+      color: #00ffcc;
+    }
+    .toggle-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #222;
+      color: #33ff33;
+      border: 2px solid #33ff33;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+    }
+    .command-input {
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid #33ff33;
+      color: #33ff33;
+      width: 100%;
+      font-family: inherit;
+      font-size: 1rem;
+      outline: none;
+      margin-top: 2rem;
+    }
+    .github-feed {
+      margin-top: 2rem;
+    }
   </style>
 </head>
 <body>
+  <div id="particles-js"></div>
+  <button class="toggle-btn" onclick="toggleDarkMode()">Toggle Mode</button>
   <div class="terminal">
     <div class="ascii-art">
       ____       _       _              _   _      _ _
@@ -83,6 +145,82 @@
       <p>📂 <a href="#projects">Projects</a></p>
       <p>📫 <a href="mailto:your-email@example.com">Contact Me</a></p>
     </div>
+
+    <div class="projects" id="projects">
+      <h2>🚀 Projects</h2>
+      <div class="card">
+        <span class="material-icons">cloud</span>
+        <div>
+          <h3>Azure Migration Toolkit</h3>
+          <p>Scripts and templates for efficient cloud migration.</p>
+        </div>
+      </div>
+      <div class="card">
+        <span class="material-icons">memory</span>
+        <div>
+          <h3>PizzaBot AI</h3>
+          <p>An AI assistant that picks the best pizza for your event 🍕.</p>
+        </div>
+      </div>
+      <div class="card">
+        <span class="material-icons">terminal</span>
+        <div>
+          <h3>Geek Terminal Portfolio</h3>
+          <p>A terminal-themed portfolio powered by HTML/CSS/JS magic.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="github-feed" id="github-feed">
+      <h2>📡 Latest GitHub Repos</h2>
+      <ul id="repo-list"></ul>
+    </div>
+
+    <input class="command-input" placeholder="> type a command... try 'help', 'contact', 'joke', or 'github'" onkeydown="handleCommand(event)" />
   </div>
+
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+    }
+
+    function handleCommand(e) {
+      if (e.key === 'Enter') {
+        const cmd = e.target.value.toLowerCase().trim();
+        switch (cmd) {
+          case 'help':
+            alert("Available commands: help, contact, github, joke");
+            break;
+          case 'contact':
+            window.location.href = 'mailto:your-email@example.com';
+            break;
+          case 'github':
+            window.open('https://github.com/jonathan-vella', '_blank');
+            break;
+          case 'joke':
+            alert("Why do programmers prefer dark mode? Because light attracts bugs 🐛!");
+            break;
+          default:
+            alert("Command not recognized. Try 'help'.");
+        }
+        e.target.value = '';
+      }
+    }
+
+    async function fetchRepos() {
+      const res = await fetch('https://api.github.com/users/jonathan-vella/repos?sort=updated&per_page=5');
+      const repos = await res.json();
+      const repoList = document.getElementById('repo-list');
+      repos.forEach(repo => {
+        const li = document.createElement('li');
+        li.innerHTML = `<a href="${repo.html_url}" target="_blank">${repo.name}</a> - ⭐ ${repo.stargazers_count}`;
+        repoList.appendChild(li);
+      });
+    }
+
+    fetchRepos();
+
+    particlesJS.load('particles-js', 'https://cdn.jsdelivr.net/gh/VincentGarreau/particles.js/particles.json');
+  </script>
 </body>
 </html>
